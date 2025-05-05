@@ -22,17 +22,20 @@ router.post('/', (req, res) => {
 router.get('/', (req, res) => {
   const { status } = req.query;
 
-  let resultado = tarefas;
-
   if (status === 'concluida') {
-    resultado = tarefas.filter(t => t.concluida === true);
-  } else if (status === 'pendente') {
-    resultado = tarefas.filter(t => t.concluida === false);
-  } else if (status !== undefined) {
-    return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
+    const concluidas = tarefas.filter(t => t.concluida === true);
+    return res.json(concluidas);
   }
 
-  res.json(resultado);
+  if (status === 'pendente') {
+    const pendentes = tarefas.filter(t => t.concluida === false);
+    return res.json(pendentes);
+  }
+
+  if (status) {
+    return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
+  }
+  return res.json(tarefas);
 });
 
 // Atualizar tarefa
@@ -46,8 +49,8 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ erro: 'Tarefa não encontrada' });
   }
 
-  if (titulo !== undefined) tarefa.titulo = titulo;
-  if (concluida !== undefined) tarefa.concluida = concluida;
+  if (titulo) tarefa.titulo = titulo;
+  if (concluida) tarefa.concluida = concluida;
 
   res.json(tarefa);
 });
