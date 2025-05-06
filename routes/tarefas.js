@@ -6,6 +6,13 @@ const router = express.Router();
 let tarefas = [];
 let proximoId = 1;
 
+
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+
 router.use(reqData);
 
 // Criar tarefa
@@ -22,26 +29,24 @@ router.post('/', validarTitulo, (req, res) => {
 // Listar tarefas
 // Com atraso de 4 segundo
 
-router.get('/', (req, res) => {
-  setTimeout(() => {
-    const { status } = req.query;
+router.get('/', async (req, res) => {
+  await delay(4000);
 
-    if (status === 'concluida') {
-      const concluidas = tarefas.filter(t => t.concluida === true);
-      return res.json(concluidas);
-    }
+  const { status } = req.query;
 
-    if (status === 'pendente') {
-      const pendentes = tarefas.filter(t => t.concluida === false);
-      return res.json(pendentes);
-    }
+  if (status === 'concluida') {
+    return res.json(tarefas.filter(t => t.concluida));
+  }
 
-    if (status) {
-      return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
-    }
+  if (status === 'pendente') {
+    return res.json(tarefas.filter(t => !t.concluida));
+  }
 
-    res.json(tarefas);
-  }, 4000);
+  if (status) {
+    return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
+  }
+
+  res.json(tarefas);
 });
 
 
