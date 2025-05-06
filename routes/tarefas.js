@@ -1,10 +1,12 @@
 import express from 'express';
 import { validarTitulo } from '../middlewares/validarTitulo.js';
+import reqData from '../middlewares/reqData.js';
 
 const router = express.Router();
-
 let tarefas = [];
 let proximoId = 1;
+
+router.use(reqData);
 
 // Criar tarefa
 router.post('/', validarTitulo, (req, res) => {
@@ -16,26 +18,32 @@ router.post('/', validarTitulo, (req, res) => {
   res.status(201).json(novaTarefa);
 });
 
-// Listar tarefas com filtro por status (opcional)
+
+// Listar tarefas
+// Com atraso de 4 segundo
+
 router.get('/', (req, res) => {
-  const { status } = req.query;
+  setTimeout(() => {
+    const { status } = req.query;
 
-  if (status === 'concluida') {
-    const concluidas = tarefas.filter(t => t.concluida === true);
-    return res.json(concluidas);
-  }
+    if (status === 'concluida') {
+      const concluidas = tarefas.filter(t => t.concluida === true);
+      return res.json(concluidas);
+    }
 
-  if (status === 'pendente') {
-    const pendentes = tarefas.filter(t => t.concluida === false);
-    return res.json(pendentes);
-  }
+    if (status === 'pendente') {
+      const pendentes = tarefas.filter(t => t.concluida === false);
+      return res.json(pendentes);
+    }
 
-  if (status) {
-    return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
-  }
+    if (status) {
+      return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
+    }
 
-  res.json(tarefas);
+    res.json(tarefas);
+  }, 4000);
 });
+
 
 // Atualizar tarefa
 router.put('/:id', (req, res) => {
@@ -48,8 +56,8 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ erro: 'Tarefa não encontrada' });
   }
 
-  if (titulo !== undefined) tarefa.titulo = titulo;
-  if (concluida !== undefined) tarefa.concluida = concluida;
+  if (titulo) tarefa.titulo = titulo;
+  if (concluida) tarefa.concluida = concluida;
 
   res.json(tarefa);
 });
