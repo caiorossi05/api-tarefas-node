@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { validarTitulo } from '../middlewares/validarTitulo.js';
+
 const router = express.Router();
-const validarTitulo = require('../middlewares/validarTitulo');
 
 let tarefas = [];
 let proximoId = 1;
@@ -8,10 +9,6 @@ let proximoId = 1;
 // Criar tarefa
 router.post('/', validarTitulo, (req, res) => {
   const { titulo, concluida = false } = req.body;
-
-  if (!titulo) {
-    return res.status(400).json({ erro: 'Título é obrigatório' });
-  }
 
   const novaTarefa = { id: proximoId++, titulo, concluida };
   tarefas.push(novaTarefa);
@@ -36,7 +33,8 @@ router.get('/', (req, res) => {
   if (status) {
     return res.status(400).json({ erro: 'Status inválido. Use "concluida" ou "pendente".' });
   }
-  return res.json(tarefas);
+
+  res.json(tarefas);
 });
 
 // Atualizar tarefa
@@ -50,8 +48,8 @@ router.put('/:id', (req, res) => {
     return res.status(404).json({ erro: 'Tarefa não encontrada' });
   }
 
-  if (titulo) tarefa.titulo = titulo;
-  if (concluida) tarefa.concluida = concluida;
+  if (titulo !== undefined) tarefa.titulo = titulo;
+  if (concluida !== undefined) tarefa.concluida = concluida;
 
   res.json(tarefa);
 });
@@ -69,4 +67,4 @@ router.delete('/:id', (req, res) => {
   res.status(204).send();
 });
 
-module.exports = router;
+export default router;

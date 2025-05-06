@@ -1,10 +1,6 @@
-// middlewares/delay.js
-module.exports = async (req, res, next) => {
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-  
-    console.log('Aguardando 1 segundo antes de continuar');
-    await delay(1000); // espera 1000 ms (1 segundo)
-    
-    next(); // segue para o próximo
-  };
-  
+// delay.js
+export default function delay(req, res, next) {
+  setTimeout(() => {
+    next();
+  }, 1000); // exemplo: 1 segundo de delay
+}
