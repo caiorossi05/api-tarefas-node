@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Tarefas</title>
+  <style>
+    body {
+      font-family: Arial;
+      background-color: #f0f0f0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Nova Tarefa</h1>
+  <form id="form-tarefa">
+    <input type="text" id="titulo" placeholder="Digite o título da tarefa" required />
+    <select id="concluida">
+      <option value="false">Pendente</option>
+      <option value="true">Concluída</option>
+    </select>
+    <button type="submit">Adicionar</button>
+    <button id="listar">Listar Tarefas</button>
+    <div id="lista-tarefas"></div>
+  </form>
+
+  <script>
+    document.getElementById('form-tarefa').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const titulo = document.getElementById('titulo').value;
+      const concluida = document.getElementById('concluida').value === 'true';
+
+      const resposta = await fetch('/tarefas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ titulo, concluida })
+      });
+
+      if (resposta.ok) {
+        alert('Tarefa adicionada com sucesso!');
+        document.getElementById('form-tarefa').reset();
+      } else {
+        const erro = await resposta.json();
+        alert('Erro: ' + erro.erro);
+      }
+    });
+  </script>
+  <script>
+    // já existente: envio do formulário...
+  
+    document.getElementById('listar').addEventListener('click', async () => {
+      const resposta = await fetch('/tarefas');
+      const tarefas = await resposta.json();
+  
+      const divLista = document.getElementById('lista-tarefas');
+      divLista.innerHTML = '<h2>Lista de Tarefas</h2>';
+  
+      if (tarefas.length === 0) {
+        divLista.innerHTML += '<p>Nenhuma tarefa encontrada.</p>';
+        return;
+      }
+  
+      const ul = document.createElement('ul');
+  
+      tarefas.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = `${t.titulo} - ${t.concluida ? 'Concluída' : 'Pendente'}`;
+        ul.appendChild(li);
+      });
+  
+      divLista.appendChild(ul);
+    });
+  </script>
+  
+</body>
+</html>
+
+

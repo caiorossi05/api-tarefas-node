@@ -30,7 +30,7 @@ router.post('/', validarTitulo, (req, res) => {
 // Com atraso de 4 segundo
 
 router.get('/', async (req, res) => {
-  await delay(4000);
+  await delay(1000);
 
   const { status } = req.query;
 
