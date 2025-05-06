@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const validarTitulo = require('../middlewares/validarTitulo');
 
 let tarefas = [];
 let proximoId = 1;
 
 // Criar tarefa
-router.post('/', (req, res) => {
+router.post('/', validarTitulo, (req, res) => {
   const { titulo, concluida = false } = req.body;
 
   if (!titulo) {
